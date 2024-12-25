@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using RoadBarrage.Flow;
 using RoadBarrage.Graphical;
+using RoadBarrage.Graphical.Components;
 using System;
 
 namespace RoadBarrage
@@ -16,6 +17,7 @@ namespace RoadBarrage
 
         private FlowField flowField;
         private Visuals visuals;
+        private DrawablesContainer drawablesContainer;
 
         public Game1()
         {
@@ -37,7 +39,10 @@ namespace RoadBarrage
 
             visuals = new Visuals(_spriteBatch, GraphicsDevice);
             flowField = new FlowField(visuals);
-            flowField.Visualize();
+            //flowField.Visualize();
+            drawablesContainer = new DrawablesContainer(visuals);
+
+            drawablesContainer.Add(new Road(visuals, 10, 10, 50, 10, 5));
         }
 
         protected override void Update(GameTime gameTime)
@@ -45,6 +50,7 @@ namespace RoadBarrage
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            drawablesContainer.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -53,6 +59,7 @@ namespace RoadBarrage
             GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();
 
+            drawablesContainer.Draw(gameTime);
             visuals.Draw();
 
             _spriteBatch.End();
