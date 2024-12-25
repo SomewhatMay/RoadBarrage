@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using RoadBarrage.Graphical.Components;
 using System;
 using System.Collections.Generic;
@@ -10,29 +11,34 @@ namespace RoadBarrage.Graphical
 {
     internal class DrawablesContainer
     {
-        private Visuals visuals;
+        private readonly Visuals visuals;
+        private readonly GraphicsDevice graphicsDevice;
+        private readonly SpriteBatch spriteBatch;
 
-        public List<Drawable> drawables { get; private set; }
+        public List<Drawable> Drawables { get; private set; }
 
-        public DrawablesContainer(Visuals visuals)
+        public DrawablesContainer(Visuals visuals, GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
         {
             this.visuals = visuals;
-            drawables = new List<Drawable>();
+            Drawables = new List<Drawable>();
+            this.graphicsDevice = graphicsDevice;
+            this.spriteBatch = spriteBatch;
         }
 
         public void Add(Drawable drawable)
         {
-            drawables.Add(drawable);
+            drawable.Initialize(visuals, graphicsDevice, spriteBatch);
+            Drawables.Add(drawable);
         }
 
         public bool Remove(Drawable drawable)
         {
-            return drawables.Remove(drawable);
+            return Drawables.Remove(drawable);
         }
 
         public void Clear()
         {
-            drawables.Clear();
+            Drawables.Clear();
         }
 
         public void Update(GameTime gameTime)
@@ -40,14 +46,22 @@ namespace RoadBarrage.Graphical
 
         }
 
-        public void Draw(GameTime gameTime)
+        public void Visualize()
         {
-            foreach (Drawable item in drawables)
+            foreach (Drawable item in Drawables)
             {
-                item.Draw(gameTime, true);
+                item.Visualize();
             }
 
             visuals.SyncTexture();
+        }
+
+        public void Draw(GameTime gameTime)
+        {
+            foreach (Drawable item in Drawables)
+            {
+                item.Draw(gameTime);
+            }
         }
     }
 }

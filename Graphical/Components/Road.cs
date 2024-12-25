@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 
 namespace RoadBarrage.Graphical.Components
@@ -11,60 +12,47 @@ namespace RoadBarrage.Graphical.Components
         public int EndY { get; private set; }
         public int Thickness { get; private set; }
 
+        private Vector2 startPoint, endPoint, edge;
+        float angle;
+        private Texture2D texture;
+        private Rectangle rect;
 
-        public Road(Visuals visuals, int startX, int startY, int endX, int endY, int thickness) : base(visuals)
+        public Road(int startX, int startY, int endX, int endY, int thickness)
         {
             StartX = startX;
             StartY = startY;
             EndX = endX;
             EndY = endY;
             Thickness = thickness;
+
+            startPoint = new Vector2(startX, startY);
+            endPoint = new Vector2(endX, endY);
         }
 
-        public override void Draw(GameTime _, bool softUpdate = false)
+        public override void Initialize(Visuals visuals, GraphicsDevice graphicsDevice, SpriteBatch spritebatch)
         {
-            visuals.SetWorldData(visuals.foreachPixel((x, y, color) =>
-            {
-                if (IsWithinRoadBounds(x, y))
-                {
-                    color = Color.White;
-                }
+            base.Initialize(visuals, graphicsDevice, spritebatch);
 
-                return color;
-            }), softUpdate);
+            texture = new Texture2D(graphicsDevice, 1, 1);
+            texture.SetData(new Color[] { Color.Gray });
+            edge = endPoint - startPoint;
+            angle = (float)Math.Atan2(edge.Y, edge.X);
+            rect = new Rectangle((int)startPoint.X, (int)startPoint.Y, (int)edge.Length(), Thickness);
         }
 
-        protected bool IsWithinRoadBounds(int x, int y)
+        public override void Draw(GameTime game)
         {
-            // Vector from start to end of the road
-            var dx = EndX - StartX;
-            var dy = EndY - StartY;
+            spriteBatch.Draw(texture,
+                rect,
+                null,
+                Color.Gray,
+                angle,
+                Vector2.Zero,
+                SpriteEffects.None,
+                0
+            );
 
-            // Vector from start of the road to the point (x, y)
-            var px = x - StartX;
-            var py = y - StartY;
-
-            // Calculate the length of the road line segment squared (avoid square roots for efficiency)
-            var roadLengthSquared = dx * dx + dy * dy;
-
-            if (roadLengthSquared == 0) // To prevent division by zero if the road is a point
-                return false;
-
-            // Projection of (px, py) onto the line segment, computing the ratio
-            var projection = (px * dx + py * dy) / (float)roadLengthSquared;
-
-            // Clamp projection between 0 and 1 to ensure the point is within the segment bounds
-            projection = Math.Clamp(projection, 0, 1);
-
-            // Closest point on the road segment to (x, y)
-            var closestX = StartX + projection * dx;
-            var closestY = StartY + projection * dy;
-
-            // Distance from (x, y) to the closest point on the line
-            var distSquared = (x - closestX) * (x - closestX) + (y - closestY) * (y - closestY);
-
-            // If the distance is less than or equal to the thickness of the road
-            return distSquared <= Thickness * Thickness;
+            base.Draw(game);
         }
     }
 }

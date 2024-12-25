@@ -1,10 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using RoadBarrage.Algorithms;
 using RoadBarrage.Flow;
 using RoadBarrage.Graphical;
 using RoadBarrage.Graphical.Components;
 using System;
+using System.Diagnostics;
 
 namespace RoadBarrage
 {
@@ -18,6 +20,7 @@ namespace RoadBarrage
         private FlowField flowField;
         private Visuals visuals;
         private DrawablesContainer drawablesContainer;
+        private RoadFollow roadFollow;
 
         public Game1()
         {
@@ -30,6 +33,8 @@ namespace RoadBarrage
 
         protected override void Initialize()
         {
+            NoiseContainer.SetSeed(System.DateTime.Now.Millisecond);
+
             base.Initialize();
         }
 
@@ -39,10 +44,20 @@ namespace RoadBarrage
 
             visuals = new Visuals(_spriteBatch, GraphicsDevice);
             flowField = new FlowField(visuals);
-            //flowField.Visualize();
-            drawablesContainer = new DrawablesContainer(visuals);
+            drawablesContainer = new DrawablesContainer(visuals, GraphicsDevice, _spriteBatch);
+            roadFollow = new RoadFollow(visuals, drawablesContainer, flowField);
 
-            drawablesContainer.Add(new Road(visuals, 10, 10, 50, 10, 5));
+            roadFollow.CalculateRoads();
+            roadFollow.Visualize();
+
+            //flowField.AddInfluencer(new GridInfluencer(10, 10, 10, Math.PI / 4));
+            //flowField.AddInfluencer(new RadialInfluencer(15, 15, 10));
+            //flowField.Visualize();
+
+            //drawablesContainer.Add(new Road(0, 0, Constants.WindowDimensions.Width, Constants.WindowDimensions.Height, 5));
+            //drawablesContainer.Add(new Road(0, 10, 100, 10, 5));
+
+            //drawablesContainer.Visualize();
         }
 
         protected override void Update(GameTime gameTime)
@@ -56,6 +71,8 @@ namespace RoadBarrage
 
         protected override void Draw(GameTime gameTime)
         {
+            Debug.WriteLine(1 / gameTime.ElapsedGameTime.TotalSeconds);
+
             GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();
 
