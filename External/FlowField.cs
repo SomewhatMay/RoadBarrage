@@ -1,8 +1,46 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace RoadBarrage.External
 {
+    internal abstract class Influencer
+    {
+        public int x { get; private set; }
+        public int y { get; private set; }
+        public double size { get; private set; }
+
+        public Influencer(int x, int y, double size)
+        {
+            this.x = x;
+            this.y = y;
+            this.size = size;
+        }
+    }
+
+    internal class GridInfluencer : Influencer
+    {
+        public double angle { get; private set; }
+        public GridInfluencer(int x, int y, double size, double angle)
+        : base(x, y, size)
+        {
+            this.angle = angle;
+        }
+    }
+
+    internal class RadialInfluencer : Influencer
+    {
+        public double intensity { get; private set; }
+        public RadialInfluencer(int x, int y, double size, double intensity)
+        : base(x, y, size)
+        {
+            this.intensity = intensity;
+        }
+    }
+
     internal class FlowField
     {
         private Visuals visuals;
@@ -13,20 +51,18 @@ namespace RoadBarrage.External
         public double[,] Angles { get; private set; } =
             new double[Constants.ChunkRes.ResolutionX, Constants.ChunkRes.ResolutionX];
 
+        public List<Influencer> influencers = new List<Influencer>();
+
         public FlowField(Visuals visuals)
         {
             this.visuals = visuals;
 
-            for (int x = 0; x < Angles.GetLength(0); x++)
-            {
-                for (int y = 0; y < Angles.GetLength(1); y++)
-                {
-                    Angles[x, y] = noise.GetNoise(x * 1f, y * 1f) * 360;
-                }
-            }
+            influencers.Add(new GridInfluencer(1, 1, 10, 45));
+            influencers.Add(new RadialInfluencer(12, 12, 10, 1));
+            Debug.WriteLine(influencers.Count);
         }
 
-        public static Color[,] DrawCross(int angleDegrees)
+        public static Color[,] DrawCross(double angleDegrees)
         {
             Color[,] grid = new Color[Constants.ChunkRes.BlockSize, Constants.ChunkRes.BlockSize];
             for (int i = 0; i < Constants.ChunkRes.BlockSize; i++)
@@ -71,6 +107,11 @@ namespace RoadBarrage.External
                     Color[,] arrow = DrawCross((int)Angles[x, y]);
                     visuals.UpdateWorldData(x, y, arrow, true);
                 }
+            }
+
+            foreach (Influencer influencer in influencers)
+            {
+                visuals.UpdateWorldData(influencer.x, influencer.y, Color.Red, true);
             }
 
             visuals.SyncTexture();
