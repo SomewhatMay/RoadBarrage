@@ -6,14 +6,14 @@ namespace RoadBarrage
     {
         public static class WindowDimensions
         {
-            public const int Width = 640;
-            public const int Height = 640;
+            public const int Width = 540;
+            public const int Height = 540;
         }
 
-        public static class ChunkResolution
+        public static class ChunkRes
         {
             // Number of pixels per block
-            public const int BlockSize = 4;
+            public const int BlockSize = 9;
 
             public const int ResolutionX = WindowDimensions.Width / BlockSize;
             public const int ResolutionY = WindowDimensions.Height / BlockSize;

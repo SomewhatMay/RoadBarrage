@@ -29,12 +29,12 @@ namespace RoadBarrage
         // Update an entire block to a specific color
         public void UpdateWorldData(int x, int y, Color color)
         {
-            for (int blockX = 0; blockX < Constants.ChunkResolution.BlockSize; blockX++)
+            for (int blockX = 0; blockX < Constants.ChunkRes.BlockSize; blockX++)
             {
-                for (int blockY = 0; blockY < Constants.ChunkResolution.BlockSize; blockY++)
+                for (int blockY = 0; blockY < Constants.ChunkRes.BlockSize; blockY++)
                 {
-                    int trueX = x * Constants.ChunkResolution.BlockSize + blockX;
-                    int trueY = y * Constants.ChunkResolution.BlockSize + blockY;
+                    int trueX = x * Constants.ChunkRes.BlockSize + blockX;
+                    int trueY = y * Constants.ChunkRes.BlockSize + blockY;
                     WorldData[trueX + trueY * Constants.WindowDimensions.Width] = color;
                 }
             }
@@ -45,18 +45,20 @@ namespace RoadBarrage
         // Update each specific pixel in a block
         public void UpdateWorldData(int x, int y, Color[,] colors)
         {
-            if (colors.GetLength(0) != Constants.ChunkResolution.BlockSize || colors.GetLength(1) != Constants.ChunkResolution.BlockSize)
+            if (colors.GetLength(0) != Constants.ChunkRes.BlockSize || colors.GetLength(1) != Constants.ChunkRes.BlockSize)
                 throw new Exception("Size of sprite out of bounds!");
 
-            for (int blockX = 0; blockX < Constants.ChunkResolution.BlockSize; blockX++)
+            for (int blockX = 0; blockX < Constants.ChunkRes.BlockSize; blockX++)
             {
-                for (int blockY = 0; blockY < Constants.ChunkResolution.BlockSize; blockY++)
+                for (int blockY = 0; blockY < Constants.ChunkRes.BlockSize; blockY++)
                 {
-                    int trueX = x * Constants.ChunkResolution.BlockSize + blockX;
-                    int trueY = y * Constants.ChunkResolution.BlockSize + blockY;
+                    int trueX = x * Constants.ChunkRes.BlockSize + blockX;
+                    int trueY = y * Constants.ChunkRes.BlockSize + blockY;
                     WorldData[trueX + trueY * Constants.WindowDimensions.Width] = colors[blockX, blockY];
                 }
             }
+
+            texture.SetData(WorldData);
         }
 
         // Overwrite the worldColor data to something new.
