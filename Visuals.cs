@@ -11,19 +11,23 @@ namespace RoadBarrage
 
         // Coordinate points; not a matrix
         public Color[] WorldData { get; private set; } = 
-            new Color[Constants.ChunkResolution.Size * Constants.ChunkResolution.Size];
+            new Color[Constants.ChunkResolution.ResolutionX * Constants.ChunkResolution.ResolutionY];
 
         public Visuals(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
         {
             this.spriteBatch = spriteBatch;
             this.graphicsDevice = graphicsDevice;
 
-            texture = new Texture2D(graphicsDevice, Constants.ChunkResolution.Size, Constants.ChunkResolution.Size);
+            texture = new Texture2D(
+                graphicsDevice, 
+                Constants.ChunkResolution.ResolutionX, 
+                Constants.ChunkResolution.ResolutionY
+            );
         }
 
         public void UpdateWorldData(int x, int y, Color color)
         {
-            WorldData[x + y * Constants.ChunkResolution.Size] = color;
+            WorldData[x + y * Constants.ChunkResolution.ResolutionX] = color;
             texture.SetData(WorldData);
         }
 

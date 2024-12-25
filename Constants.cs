@@ -12,12 +12,16 @@ namespace RoadBarrage
 
         public static class ChunkResolution
         {
+            // Number of pixels per block
+            public const int BlockSize = 4;
+
+            // Number of Blocks per Chunk
             // By definition, chunks must be square
             // Try to ensure that Size is a divisor of Width and Height
             public const int Size = 16;
-            //public static readonly Vector2 ChunkCount = new Vector2(WindowDimensions.Width / Size, WindowDimensions.Height / Size);
-            public const int ChunkCountX = WindowDimensions.Width / Size;
-            public const int ChunkCountY = WindowDimensions.Height / Size;
+
+            public const int ResolutionX = WindowDimensions.Width / BlockSize;
+            public const int ResolutionY = WindowDimensions.Height / BlockSize;
         }
     }
 }

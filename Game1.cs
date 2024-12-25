@@ -16,8 +16,8 @@ namespace RoadBarrage
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferWidth = 400;
-            _graphics.PreferredBackBufferHeight = 400;
+            _graphics.PreferredBackBufferWidth = Constants.WindowDimensions.Width;
+            _graphics.PreferredBackBufferHeight = Constants.WindowDimensions.Height;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -32,6 +32,11 @@ namespace RoadBarrage
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             visuals = new Visuals(_spriteBatch, GraphicsDevice);
+
+            visuals.UpdateWorldData(0, 0, Color.Green);
+            visuals.UpdateWorldData(0, Constants.ChunkResolution.ResolutionY - 1, Color.Green);
+            visuals.UpdateWorldData(Constants.ChunkResolution.ResolutionX - 1, 0, Color.Green);
+            visuals.UpdateWorldData(Constants.ChunkResolution.ResolutionX - 1, Constants.ChunkResolution.ResolutionY - 1, Color.Green);
         }
 
         protected override void Update(GameTime gameTime)
@@ -48,7 +53,12 @@ namespace RoadBarrage
             GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();
 
-            visuals.UpdateWorldData(random.Next(Constants.ChunkResolution.Size), random.Next(Constants.ChunkResolution.Size), Color.Green);
+            //int x = random.Next(Constants.ChunkResolution.ResolutionX);
+            //int y = random.Next(Constants.ChunkResolution.ResolutionY);
+            //int cx = x / Constants.ChunkResolution.Size;
+            //int cy = y / Constants.ChunkResolution.Size;
+            //Color c = (cx % 2 == 0 & cy % 2 == 0) ? Color.Green : Color.Red;
+            //visuals.UpdateWorldData(x, y, c);
             visuals.Draw();
 
             _spriteBatch.End();
