@@ -31,6 +31,49 @@ namespace RoadBarrage
             return x + y * Constants.WindowDimensions.Width;
         }
 
+        public Color[,] SquareColor(Color color)
+        {
+            Color[,] square = new Color[Constants.ChunkRes.BlockSize, Constants.ChunkRes.BlockSize];
+
+            for (int x = 0; x < Constants.ChunkRes.BlockSize; x++)
+            {
+                for (int y = 0; y < Constants.ChunkRes.BlockSize; y++)
+                {
+                    square[x, y] = color;
+                }
+            }
+
+            return square;
+        }
+
+        public Color[,] CircleColor(Color color)
+        {
+            Color[,] circle = new Color[Constants.ChunkRes.BlockSize, Constants.ChunkRes.BlockSize];
+            int centerX = Constants.ChunkRes.BlockSize / 2;
+            int centerY = Constants.ChunkRes.BlockSize / 2;
+            int radius = Constants.ChunkRes.BlockSize / 2;
+
+            for (int x = 0; x < Constants.ChunkRes.BlockSize; x++)
+            {
+                for (int y = 0; y < Constants.ChunkRes.BlockSize; y++)
+                {
+                    int dx = x - centerX;
+                    int dy = y - centerY;
+
+                    if (dx * dx + dy * dy <= radius * radius)
+                    {
+                        circle[x, y] = color;
+                    }
+                    else
+                    {
+                        circle[x, y] = Color.Black;
+                    }
+                }
+            }
+
+            return circle;
+        }
+
         // Update an entire block to a specific color
         public void UpdateWorldData(int x, int y, Color color, bool softUpdate = false)
         {

@@ -111,7 +111,18 @@ namespace RoadBarrage.External
 
             foreach (Influencer influencer in influencers)
             {
-                visuals.UpdateWorldData(influencer.x, influencer.y, Color.Red, true);
+                Color[,] color;
+
+                if (influencer is GridInfluencer)
+                {
+                    color = visuals.SquareColor(Color.Red);
+                }
+                else
+                {
+                    color = visuals.CircleColor(Color.Red);
+                }
+
+                visuals.UpdateWorldData(influencer.x, influencer.y, color, true);
             }
 
             visuals.SyncTexture();
