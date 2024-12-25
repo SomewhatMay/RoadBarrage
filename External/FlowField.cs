@@ -11,8 +11,8 @@ namespace RoadBarrage.External
         public int y { get; private set; }
         public int size { get; private set; }
 
-        // [x, y, 0] -> Angle (radians) at pos (x, y)
-        // [x, y, 1] -> Intensity at pos (x, y)
+        // [x, y, 0] -> x component of angle at pos (x, y)
+        // [x, y, 1] -> y component of angle at pos (x, y)
         public double[,,] field { get; private set; }
 
         public Influencer(int x, int y, int size)
@@ -67,11 +67,9 @@ namespace RoadBarrage.External
 
     internal class RadialInfluencer : Influencer
     {
-        public double intensity { get; private set; }
-        public RadialInfluencer(int x, int y, int size, double intensity)
+        public RadialInfluencer(int x, int y, int size)
         : base(x, y, size)
         {
-            this.intensity = intensity;
             CalculateField();
         }
 
@@ -115,8 +113,8 @@ namespace RoadBarrage.External
             this.visuals = visuals;
 
             //AddInfluencer(new RadialInfluencer(20, 20, 30, 1));
-            //AddInfluencer(new RadialInfluencer(35, 35, 30, 1));
             AddInfluencer(new GridInfluencer(35, 35, 15, Math.PI / 4));
+            AddInfluencer(new RadialInfluencer(25, 25, 15));
         }
 
         public void AddInfluencer(Influencer influencer)
