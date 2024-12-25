@@ -37,8 +37,6 @@ namespace RoadBarrage
 
             visuals = new Visuals(_spriteBatch, GraphicsDevice);
             flowField = new FlowField(visuals);
-
-            flowField.Visualize();
         }
 
         protected override void Update(GameTime gameTime)
@@ -48,7 +46,6 @@ namespace RoadBarrage
 
             base.Update(gameTime);
         }
-
 
         protected override void Draw(GameTime gameTime)
         {

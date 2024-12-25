@@ -3,99 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace RoadBarrage.External
+namespace RoadBarrage.FlowField
 {
-    internal abstract class Influencer
-    {
-        public int x { get; private set; }
-        public int y { get; private set; }
-        public int size { get; private set; }
-
-        // [x, y, 0] -> x component of angle at pos (x, y)
-        // [x, y, 1] -> y component of angle at pos (x, y)
-        public double[,,] field { get; private set; }
-
-        public Influencer(int x, int y, int size)
-        {
-            this.x = x;
-            this.y = y;
-            this.size = size;
-
-            field = new double[Constants.ChunkRes.ResolutionX, Constants.ChunkRes.ResolutionY, 2];
-        }
-
-        protected abstract void CalculateField();
-    }
-
-    internal class GridInfluencer : Influencer
-    {
-        public double angle { get; private set; }
-        private double dirX, dirY;
-        public GridInfluencer(int x, int y, int size, double angle)
-        : base(x, y, size)
-        {
-            this.angle = angle;
-
-            dirX = Math.Cos(angle);
-            dirY = Math.Sin(angle);
-
-            CalculateField();
-        }
-
-        protected override void CalculateField()
-        {
-            for (int blockX = 0; blockX < Constants.ChunkRes.ResolutionX; blockX++)
-            {
-                for (int blockY = 0; blockY < Constants.ChunkRes.ResolutionY; blockY++)
-                {
-                    double distance = Math.Sqrt(Math.Pow(blockX - x, 2) + Math.Pow(blockY - y, 2));
-                    double _dirX = dirX;
-                    double _dirY = dirY;
-
-                    if (distance > size)
-                    {
-                        _dirX = 0;
-                        _dirY = 0;
-                    }
-
-                    field[blockX, blockY, 0] = _dirX;
-                    field[blockX, blockY, 1] = _dirY;
-                }
-            }
-        }
-    }
-
-    internal class RadialInfluencer : Influencer
-    {
-        public RadialInfluencer(int x, int y, int size)
-        : base(x, y, size)
-        {
-            CalculateField();
-        }
-
-        protected override void CalculateField()
-        {
-            for (int blockX = 0; blockX < Constants.ChunkRes.ResolutionX; blockX++)
-            {
-                for (int blockY = 0; blockY < Constants.ChunkRes.ResolutionY; blockY++)
-                {
-                    int dx = blockX - x;
-                    int dy = blockY - y;
-                    double distance = Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2));
-
-                    if (distance > size)
-                    {
-                        dx = 0;
-                        dy = 0;
-                    }
-
-                    field[blockX, blockY, 0] = dx;
-                    field[blockX, blockY, 1] = dy;
-                }
-            }
-        }
-    }
-
     internal class FlowField
     {
         private Visuals visuals;
@@ -111,10 +20,6 @@ namespace RoadBarrage.External
         public FlowField(Visuals visuals)
         {
             this.visuals = visuals;
-
-            //AddInfluencer(new RadialInfluencer(20, 20, 30, 1));
-            AddInfluencer(new GridInfluencer(35, 35, 15, Math.PI / 4));
-            AddInfluencer(new RadialInfluencer(25, 25, 15));
         }
 
         public void AddInfluencer(Influencer influencer)
