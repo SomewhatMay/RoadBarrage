@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace RoadBarrage
+namespace RoadBarrage.Graphical
 {
     internal class Visuals
     {
@@ -133,6 +133,52 @@ namespace RoadBarrage
         public void SyncTexture()
         {
             texture.SetData(WorldData);
+        }
+
+        public Color[] foreachBlock(Func<int, int, Color, Color> predicate)
+        {
+            Color[] newWorldData = new Color[WorldData.Length];
+
+            for (int blockX = 0; blockX < Constants.ChunkRes.BlockSize; blockX++)
+            {
+                for (int blockY = 0; blockY < Constants.ChunkRes.BlockSize; blockY++)
+                {
+                    int x = blockX * Constants.ChunkRes.BlockSize;
+                    int y = blockY * Constants.ChunkRes.BlockSize;
+
+                    int i = CoordinatesToIndex(x, y);
+                    Color result = predicate(blockX, blockY, WorldData[i]);
+
+                    for (int sizeX = 0; sizeX < Constants.ChunkRes.BlockSize; sizeX++)
+                    {
+                        for (int sizeY = 0; sizeY < Constants.ChunkRes.BlockSize; sizeY++)
+                        {
+                            int trueX = x + sizeX;
+                            int trueY = y + sizeY;
+                            newWorldData[CoordinatesToIndex(trueX, trueY)] = result;
+                        }
+                    }
+                }
+            }
+
+            return newWorldData;
+        }
+
+        public Color[] foreachPixel(Func<int, int, Color, Color> predicate)
+        {
+            Color[] newWorldData = new Color[WorldData.Length];
+
+            for (int x = 0; x < Constants.WindowDimensions.Width; x++)
+            {
+                for (int y = 0; y < Constants.WindowDimensions.Height; y++)
+                {
+                    int i = CoordinatesToIndex(x, y);
+                    newWorldData[i] = predicate(x, y, WorldData[i]);
+
+                }
+            }
+
+            return newWorldData;
         }
 
         public void Draw()
