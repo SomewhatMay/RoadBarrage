@@ -1,40 +1,37 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using RoadBarrage.Visible;
+using System;
 
 namespace RoadBarrage
 {
     public class Game1 : Game
     {
-        private GraphicsDeviceManager _graphics;
+        private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private StaticWindow staticWindow;
+        private readonly Random random = new Random();
+        private Visuals visuals;
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferWidth = Constants.WIDTH;
-            _graphics.PreferredBackBufferHeight = Constants.HEIGHT;
+            _graphics.PreferredBackBufferWidth = 400;
+            _graphics.PreferredBackBufferHeight = 400;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-
-            staticWindow = new StaticWindow();
         }
 
         protected override void Initialize()
         {
-            staticWindow.Initialize(GraphicsDevice);
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            staticWindow.LoadContent(_spriteBatch);
 
-            // TODO: use this.Content to load your game content here
+            visuals = new Visuals(_spriteBatch, GraphicsDevice);
         }
 
         protected override void Update(GameTime gameTime)
@@ -42,18 +39,17 @@ namespace RoadBarrage
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-
-            staticWindow.Update(gameTime);
             base.Update(gameTime);
         }
+
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();
 
-            staticWindow.Draw(gameTime);
+            visuals.UpdateWorldData(random.Next(Constants.ChunkResolution.Size), random.Next(Constants.ChunkResolution.Size), Color.Green);
+            visuals.Draw();
 
             _spriteBatch.End();
             base.Draw(gameTime);
