@@ -30,15 +30,38 @@ namespace RoadBarrage.External
     internal class GridInfluencer : Influencer
     {
         public double angle { get; private set; }
+        private double dirX, dirY;
         public GridInfluencer(int x, int y, int size, double angle)
         : base(x, y, size)
         {
             this.angle = angle;
+
+            dirX = Math.Cos(angle);
+            dirY = Math.Sin(angle);
+
+            CalculateField();
         }
 
         protected override void CalculateField()
         {
-            throw new NotImplementedException();
+            for (int blockX = 0; blockX < Constants.ChunkRes.ResolutionX; blockX++)
+            {
+                for (int blockY = 0; blockY < Constants.ChunkRes.ResolutionY; blockY++)
+                {
+                    double distance = Math.Sqrt(Math.Pow(blockX - x, 2) + Math.Pow(blockY - y, 2));
+                    double _dirX = dirX;
+                    double _dirY = dirY;
+
+                    if (distance > size)
+                    {
+                        _dirX = 0;
+                        _dirY = 0;
+                    }
+
+                    field[blockX, blockY, 0] = _dirX;
+                    field[blockX, blockY, 1] = _dirY;
+                }
+            }
         }
     }
 
@@ -49,7 +72,7 @@ namespace RoadBarrage.External
         : base(x, y, size)
         {
             this.intensity = intensity;
-            this.CalculateField();
+            CalculateField();
         }
 
         protected override void CalculateField()
@@ -91,8 +114,9 @@ namespace RoadBarrage.External
         {
             this.visuals = visuals;
 
-            AddInfluencer(new RadialInfluencer(20, 20, 30, 1));
-            AddInfluencer(new RadialInfluencer(35, 35, 30, 1));
+            //AddInfluencer(new RadialInfluencer(20, 20, 30, 1));
+            //AddInfluencer(new RadialInfluencer(35, 35, 30, 1));
+            AddInfluencer(new GridInfluencer(35, 35, 15, Math.PI / 4));
         }
 
         public void AddInfluencer(Influencer influencer)
@@ -186,6 +210,7 @@ namespace RoadBarrage.External
 
                 if (influencer is GridInfluencer)
                 {
+                    GridInfluencer _influencer = (GridInfluencer)influencer;
                     color = visuals.SquareColor(Color.Red);
                 }
                 else
