@@ -1,43 +1,21 @@
-﻿using RoadBarrage.Flow;
-using RoadBarrage.Graphical;
+﻿using RoadBarrage.Algorithms;
+using RoadBarrage.Flow;
 using RoadBarrage.Graphical.Components;
 using System;
 using System.Collections.Generic;
 
-namespace RoadBarrage.Algorithms
+namespace RoadBarrage.Graphical
 {
-    internal class RoadFollow
+    internal class RoadContainer
     {
-        private Visuals visuals;
         private DrawablesContainer drawablesContainer;
-        private FlowField flowField;
-
-        private FastNoiseLite roadNoise = NoiseContainer.CreateNoise();
-        private Random random = new Random();
 
         public List<LinkedList<WorldPos>> Roads;
 
-        public RoadFollow(Visuals visuals, DrawablesContainer drawablesContainer, FlowField flowField)
+        public RoadContainer(DrawablesContainer drawablesContainer)
         {
             Roads = new List<LinkedList<WorldPos>>();
-
             this.drawablesContainer = drawablesContainer;
-            this.flowField = flowField;
-            this.visuals = visuals;
-        }
-
-        public void CalculateRoads()
-        {
-            LinkedList<WorldPos> road = new LinkedList<WorldPos>();
-
-            for (int j = 0; j < 10; j++)
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    road.AddLast(new WorldPos(random.Next(Constants.WindowDimensions.Width), random.Next(Constants.WindowDimensions.Height)));
-                }
-                Roads.Add(road);
-            }
         }
 
         public void Visualize()

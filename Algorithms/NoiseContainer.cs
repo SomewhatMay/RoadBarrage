@@ -18,7 +18,7 @@ namespace RoadBarrage.Algorithms
             Seed = seed;
         }
 
-        public static FastNoiseLite CreateNoise()
+        public static FastNoiseLite CreateNoise(float frequency = 0.01f)
         {
             FastNoiseLite noiseFunction = new FastNoiseLite(Seed + noiseOffset);
             Noises.Add(noiseFunction);

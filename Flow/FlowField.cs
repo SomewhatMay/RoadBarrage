@@ -14,7 +14,7 @@ namespace RoadBarrage.Flow
         private FastNoiseLite noise = new FastNoiseLite();
 
         public double[,] Angles { get; private set; } =
-            new double[Constants.ChunkRes.ResolutionX, Constants.ChunkRes.ResolutionX];
+            new double[Constants.WorldRes.ResolutionX, Constants.WorldRes.ResolutionX];
 
         private List<Influencer> influencers = new List<Influencer>();
 
@@ -45,9 +45,9 @@ namespace RoadBarrage.Flow
 
         public void RecalculateField()
         {
-            for (int blockX = 0; blockX < Constants.ChunkRes.ResolutionX; blockX++)
+            for (int blockX = 0; blockX < Constants.WorldRes.ResolutionX; blockX++)
             {
-                for (int blockY = 0; blockY < Constants.ChunkRes.ResolutionY; blockY++)
+                for (int blockY = 0; blockY < Constants.WorldRes.ResolutionY; blockY++)
                 {
                     double weightedX = 0;
                     double weightedY = 0;
@@ -65,20 +65,20 @@ namespace RoadBarrage.Flow
         }
         public static Color[,] DrawCross(double angleRadians)
         {
-            Color[,] grid = new Color[Constants.ChunkRes.BlockSize, Constants.ChunkRes.BlockSize];
-            for (int i = 0; i < Constants.ChunkRes.BlockSize; i++)
+            Color[,] grid = new Color[Constants.WorldRes.BlockSize, Constants.WorldRes.BlockSize];
+            for (int i = 0; i < Constants.WorldRes.BlockSize; i++)
             {
-                for (int j = 0; j < Constants.ChunkRes.BlockSize; j++)
+                for (int j = 0; j < Constants.WorldRes.BlockSize; j++)
                 {
                     grid[i, j] = new Color(0, 0, 0);
                 }
             }
 
-            int centerX = Constants.ChunkRes.BlockSize / 2, centerY = Constants.ChunkRes.BlockSize / 2;
+            int centerX = Constants.WorldRes.BlockSize / 2, centerY = Constants.WorldRes.BlockSize / 2;
 
-            for (int x = 0; x < Constants.ChunkRes.BlockSize; x++)
+            for (int x = 0; x < Constants.WorldRes.BlockSize; x++)
             {
-                for (int y = 0; y < Constants.ChunkRes.BlockSize; y++)
+                for (int y = 0; y < Constants.WorldRes.BlockSize; y++)
                 {
                     int dx = x - centerX;
                     int dy = y - centerY;

@@ -16,11 +16,12 @@ namespace RoadBarrage
         private SpriteBatch _spriteBatch;
 
         private readonly Random random = new Random();
+        private readonly FastNoiseLite noise = new FastNoiseLite();
 
         private FlowField flowField;
         private Visuals visuals;
         private DrawablesContainer drawablesContainer;
-        private RoadFollow roadFollow;
+        private RoadContainer roadFollow;
 
         public Game1()
         {
@@ -45,9 +46,8 @@ namespace RoadBarrage
             visuals = new Visuals(_spriteBatch, GraphicsDevice);
             flowField = new FlowField(visuals);
             drawablesContainer = new DrawablesContainer(visuals, GraphicsDevice, _spriteBatch);
-            roadFollow = new RoadFollow(visuals, drawablesContainer, flowField);
+            roadFollow = new RoadContainer(drawablesContainer);
 
-            roadFollow.CalculateRoads();
             roadFollow.Visualize();
 
             //flowField.AddInfluencer(new GridInfluencer(10, 10, 10, Math.PI / 4));
@@ -71,7 +71,7 @@ namespace RoadBarrage
 
         protected override void Draw(GameTime gameTime)
         {
-            Debug.WriteLine(1 / gameTime.ElapsedGameTime.TotalSeconds);
+            //Debug.WriteLine(1 / gameTime.ElapsedGameTime.TotalSeconds);
 
             GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();

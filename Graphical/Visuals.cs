@@ -35,11 +35,11 @@ namespace RoadBarrage.Graphical
 
         public Color[,] SquareColor(Color color)
         {
-            Color[,] square = new Color[Constants.ChunkRes.BlockSize, Constants.ChunkRes.BlockSize];
+            Color[,] square = new Color[Constants.WorldRes.BlockSize, Constants.WorldRes.BlockSize];
 
-            for (int x = 0; x < Constants.ChunkRes.BlockSize; x++)
+            for (int x = 0; x < Constants.WorldRes.BlockSize; x++)
             {
-                for (int y = 0; y < Constants.ChunkRes.BlockSize; y++)
+                for (int y = 0; y < Constants.WorldRes.BlockSize; y++)
                 {
                     square[x, y] = color;
                 }
@@ -50,14 +50,14 @@ namespace RoadBarrage.Graphical
 
         public Color[,] CircleColor(Color color)
         {
-            Color[,] circle = new Color[Constants.ChunkRes.BlockSize, Constants.ChunkRes.BlockSize];
-            int centerX = Constants.ChunkRes.BlockSize / 2;
-            int centerY = Constants.ChunkRes.BlockSize / 2;
-            int radius = Constants.ChunkRes.BlockSize / 2;
+            Color[,] circle = new Color[Constants.WorldRes.BlockSize, Constants.WorldRes.BlockSize];
+            int centerX = Constants.WorldRes.BlockSize / 2;
+            int centerY = Constants.WorldRes.BlockSize / 2;
+            int radius = Constants.WorldRes.BlockSize / 2;
 
-            for (int x = 0; x < Constants.ChunkRes.BlockSize; x++)
+            for (int x = 0; x < Constants.WorldRes.BlockSize; x++)
             {
-                for (int y = 0; y < Constants.ChunkRes.BlockSize; y++)
+                for (int y = 0; y < Constants.WorldRes.BlockSize; y++)
                 {
                     int dx = x - centerX;
                     int dy = y - centerY;
@@ -79,12 +79,12 @@ namespace RoadBarrage.Graphical
         // Update an entire block to a specific color
         public void UpdateWorldData(int x, int y, Color color, bool softUpdate = false)
         {
-            for (int blockX = 0; blockX < Constants.ChunkRes.BlockSize; blockX++)
+            for (int blockX = 0; blockX < Constants.WorldRes.BlockSize; blockX++)
             {
-                for (int blockY = 0; blockY < Constants.ChunkRes.BlockSize; blockY++)
+                for (int blockY = 0; blockY < Constants.WorldRes.BlockSize; blockY++)
                 {
-                    int trueX = x * Constants.ChunkRes.BlockSize + blockX;
-                    int trueY = y * Constants.ChunkRes.BlockSize + blockY;
+                    int trueX = x * Constants.WorldRes.BlockSize + blockX;
+                    int trueY = y * Constants.WorldRes.BlockSize + blockY;
                     WorldData[CoordinatesToIndex(trueX, trueY)] = color;
                 }
             }
@@ -98,15 +98,15 @@ namespace RoadBarrage.Graphical
         // Update each specific pixel in a block
         public void UpdateWorldData(int x, int y, Color[,] colors, bool softUpdate = false)
         {
-            if (colors.GetLength(0) != Constants.ChunkRes.BlockSize || colors.GetLength(1) != Constants.ChunkRes.BlockSize)
+            if (colors.GetLength(0) != Constants.WorldRes.BlockSize || colors.GetLength(1) != Constants.WorldRes.BlockSize)
                 throw new Exception("Size of sprite out of bounds!");
 
-            for (int blockX = 0; blockX < Constants.ChunkRes.BlockSize; blockX++)
+            for (int blockX = 0; blockX < Constants.WorldRes.BlockSize; blockX++)
             {
-                for (int blockY = 0; blockY < Constants.ChunkRes.BlockSize; blockY++)
+                for (int blockY = 0; blockY < Constants.WorldRes.BlockSize; blockY++)
                 {
-                    int trueX = x * Constants.ChunkRes.BlockSize + blockX;
-                    int trueY = y * Constants.ChunkRes.BlockSize + blockY;
+                    int trueX = x * Constants.WorldRes.BlockSize + blockX;
+                    int trueY = y * Constants.WorldRes.BlockSize + blockY;
                     WorldData[CoordinatesToIndex(trueX, trueY)] = colors[blockX, blockY];
                 }
             }
@@ -141,19 +141,19 @@ namespace RoadBarrage.Graphical
         {
             Color[] newWorldData = new Color[WorldData.Length];
 
-            for (int blockX = 0; blockX < Constants.ChunkRes.BlockSize; blockX++)
+            for (int blockX = 0; blockX < Constants.WorldRes.BlockSize; blockX++)
             {
-                for (int blockY = 0; blockY < Constants.ChunkRes.BlockSize; blockY++)
+                for (int blockY = 0; blockY < Constants.WorldRes.BlockSize; blockY++)
                 {
-                    int x = blockX * Constants.ChunkRes.BlockSize;
-                    int y = blockY * Constants.ChunkRes.BlockSize;
+                    int x = blockX * Constants.WorldRes.BlockSize;
+                    int y = blockY * Constants.WorldRes.BlockSize;
 
                     int i = CoordinatesToIndex(x, y);
                     Color result = predicate(blockX, blockY, WorldData[i]);
 
-                    for (int sizeX = 0; sizeX < Constants.ChunkRes.BlockSize; sizeX++)
+                    for (int sizeX = 0; sizeX < Constants.WorldRes.BlockSize; sizeX++)
                     {
-                        for (int sizeY = 0; sizeY < Constants.ChunkRes.BlockSize; sizeY++)
+                        for (int sizeY = 0; sizeY < Constants.WorldRes.BlockSize; sizeY++)
                         {
                             int trueX = x + sizeX;
                             int trueY = y + sizeY;

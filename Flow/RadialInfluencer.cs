@@ -12,9 +12,9 @@ namespace RoadBarrage.Flow
 
         protected override void CalculateField()
         {
-            for (int blockX = 0; blockX < Constants.ChunkRes.ResolutionX; blockX++)
+            for (int blockX = 0; blockX < Constants.WorldRes.ResolutionX; blockX++)
             {
-                for (int blockY = 0; blockY < Constants.ChunkRes.ResolutionY; blockY++)
+                for (int blockY = 0; blockY < Constants.WorldRes.ResolutionY; blockY++)
                 {
                     int dx = blockX - x;
                     int dy = blockY - y;

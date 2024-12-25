@@ -16,7 +16,7 @@
             this.y = y;
             this.size = size;
 
-            field = new double[Constants.ChunkRes.ResolutionX, Constants.ChunkRes.ResolutionY, 2];
+            field = new double[Constants.WorldRes.ResolutionX, Constants.WorldRes.ResolutionY, 2];
         }
 
         protected abstract void CalculateField();
