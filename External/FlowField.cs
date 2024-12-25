@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace RoadBarrage.External
 {
@@ -11,33 +9,69 @@ namespace RoadBarrage.External
     {
         public int x { get; private set; }
         public int y { get; private set; }
-        public double size { get; private set; }
+        public int size { get; private set; }
 
-        public Influencer(int x, int y, double size)
+        // [x, y, 0] -> Angle (radians) at pos (x, y)
+        // [x, y, 1] -> Intensity at pos (x, y)
+        public double[,,] field { get; private set; }
+
+        public Influencer(int x, int y, int size)
         {
             this.x = x;
             this.y = y;
             this.size = size;
+
+            field = new double[Constants.ChunkRes.ResolutionX, Constants.ChunkRes.ResolutionY, 2];
         }
+
+        protected abstract void CalculateField();
     }
 
     internal class GridInfluencer : Influencer
     {
         public double angle { get; private set; }
-        public GridInfluencer(int x, int y, double size, double angle)
+        public GridInfluencer(int x, int y, int size, double angle)
         : base(x, y, size)
         {
             this.angle = angle;
+        }
+
+        protected override void CalculateField()
+        {
+            throw new NotImplementedException();
         }
     }
 
     internal class RadialInfluencer : Influencer
     {
         public double intensity { get; private set; }
-        public RadialInfluencer(int x, int y, double size, double intensity)
+        public RadialInfluencer(int x, int y, int size, double intensity)
         : base(x, y, size)
         {
             this.intensity = intensity;
+            this.CalculateField();
+        }
+
+        protected override void CalculateField()
+        {
+            for (int blockX = 0; blockX < Constants.ChunkRes.ResolutionX; blockX++)
+            {
+                for (int blockY = 0; blockY < Constants.ChunkRes.ResolutionY; blockY++)
+                {
+                    int dx = blockX - x;
+                    int dy = blockY - y;
+                    double distance = Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2));
+
+                    if (distance > size)
+                    {
+                        dx = 0;
+                        dy = 0;
+                    }
+
+                    field[blockX, blockY, 0] = dx;
+                    field[blockX, blockY, 1] = dy;
+                }
+            }
         }
     }
 
@@ -51,18 +85,57 @@ namespace RoadBarrage.External
         public double[,] Angles { get; private set; } =
             new double[Constants.ChunkRes.ResolutionX, Constants.ChunkRes.ResolutionX];
 
-        public List<Influencer> influencers = new List<Influencer>();
+        private List<Influencer> influencers = new List<Influencer>();
 
         public FlowField(Visuals visuals)
         {
             this.visuals = visuals;
 
-            influencers.Add(new GridInfluencer(1, 1, 10, 45));
-            influencers.Add(new RadialInfluencer(12, 12, 10, 1));
-            Debug.WriteLine(influencers.Count);
+            AddInfluencer(new RadialInfluencer(20, 20, 30, 1));
+            AddInfluencer(new RadialInfluencer(35, 35, 30, 1));
         }
 
-        public static Color[,] DrawCross(double angleDegrees)
+        public void AddInfluencer(Influencer influencer)
+        {
+            influencers.Add(influencer);
+            RecalculateField();
+        }
+
+        public void ClearInfluencers()
+        {
+            influencers.Clear();
+            RecalculateField();
+        }
+
+        public bool RemoveInfluencer(Influencer influencer)
+        {
+            bool result = influencers.Remove(influencer);
+            RecalculateField();
+
+            return result;
+        }
+
+        public void RecalculateField()
+        {
+            for (int blockX = 0; blockX < Constants.ChunkRes.ResolutionX; blockX++)
+            {
+                for (int blockY = 0; blockY < Constants.ChunkRes.ResolutionY; blockY++)
+                {
+                    double weightedX = 0;
+                    double weightedY = 0;
+
+                    foreach (Influencer influencer in influencers)
+                    {
+                        weightedX += influencer.field[blockX, blockY, 0];
+                        weightedY += influencer.field[blockX, blockY, 1];
+                    }
+
+                    double resultingDirection = Math.Atan2(weightedY, weightedX);
+                    Angles[blockX, blockY] = resultingDirection;
+                }
+            }
+        }
+        public static Color[,] DrawCross(double angleRadians)
         {
             Color[,] grid = new Color[Constants.ChunkRes.BlockSize, Constants.ChunkRes.BlockSize];
             for (int i = 0; i < Constants.ChunkRes.BlockSize; i++)
@@ -74,8 +147,6 @@ namespace RoadBarrage.External
             }
 
             int centerX = Constants.ChunkRes.BlockSize / 2, centerY = Constants.ChunkRes.BlockSize / 2;
-
-            double angleRadians = angleDegrees * Math.PI / 180.0;
 
             for (int x = 0; x < Constants.ChunkRes.BlockSize; x++)
             {
@@ -104,7 +175,7 @@ namespace RoadBarrage.External
             {
                 for (int y = 0; y < Angles.GetLength(1); y++)
                 {
-                    Color[,] arrow = DrawCross((int)Angles[x, y]);
+                    Color[,] arrow = DrawCross(Angles[x, y]);
                     visuals.UpdateWorldData(x, y, arrow, true);
                 }
             }
