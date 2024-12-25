@@ -26,8 +26,13 @@ namespace RoadBarrage
             );
         }
 
+        public int CoordinatesToIndex(int x, int y)
+        {
+            return x + y * Constants.WindowDimensions.Width;
+        }
+
         // Update an entire block to a specific color
-        public void UpdateWorldData(int x, int y, Color color)
+        public void UpdateWorldData(int x, int y, Color color, bool softUpdate = false)
         {
             for (int blockX = 0; blockX < Constants.ChunkRes.BlockSize; blockX++)
             {
@@ -35,15 +40,18 @@ namespace RoadBarrage
                 {
                     int trueX = x * Constants.ChunkRes.BlockSize + blockX;
                     int trueY = y * Constants.ChunkRes.BlockSize + blockY;
-                    WorldData[trueX + trueY * Constants.WindowDimensions.Width] = color;
+                    WorldData[CoordinatesToIndex(trueX, trueY)] = color;
                 }
             }
 
-            texture.SetData(WorldData);
+            if (!softUpdate)
+            {
+                texture.SetData(WorldData);
+            }
         }
 
         // Update each specific pixel in a block
-        public void UpdateWorldData(int x, int y, Color[,] colors)
+        public void UpdateWorldData(int x, int y, Color[,] colors, bool softUpdate = false)
         {
             if (colors.GetLength(0) != Constants.ChunkRes.BlockSize || colors.GetLength(1) != Constants.ChunkRes.BlockSize)
                 throw new Exception("Size of sprite out of bounds!");
@@ -54,21 +62,33 @@ namespace RoadBarrage
                 {
                     int trueX = x * Constants.ChunkRes.BlockSize + blockX;
                     int trueY = y * Constants.ChunkRes.BlockSize + blockY;
-                    WorldData[trueX + trueY * Constants.WindowDimensions.Width] = colors[blockX, blockY];
+                    WorldData[CoordinatesToIndex(trueX, trueY)] = colors[blockX, blockY];
                 }
             }
 
-            texture.SetData(WorldData);
+            if (!softUpdate)
+            {
+                texture.SetData(WorldData);
+            }
         }
 
         // Overwrite the worldColor data to something new.
         // Useful if you want to adjust an arbitrary area of the colors.
-        public void SetWorldData(Color[] worldData)
+        public void SetWorldData(Color[] worldData, bool softUpdate = false)
         {
             if (worldData.Length != WorldData.Length)
                 throw new Exception("New world data does not match required world data!");
 
             WorldData = worldData;
+
+            if (!softUpdate)
+            {
+                texture.SetData(WorldData);
+            }
+        }
+
+        public void SyncTexture()
+        {
             texture.SetData(WorldData);
         }
 

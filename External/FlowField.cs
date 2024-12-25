@@ -7,12 +7,23 @@ namespace RoadBarrage.External
     {
         private Visuals visuals;
 
+        private Random random = new Random();
+        private FastNoiseLite noise = new FastNoiseLite();
+
         public double[,] Angles { get; private set; } =
             new double[Constants.ChunkRes.ResolutionX, Constants.ChunkRes.ResolutionX];
 
         public FlowField(Visuals visuals)
         {
             this.visuals = visuals;
+
+            for (int x = 0; x < Angles.GetLength(0); x++)
+            {
+                for (int y = 0; y < Angles.GetLength(1); y++)
+                {
+                    Angles[x, y] = noise.GetNoise(x * 1f, y * 1f) * 360;
+                }
+            }
         }
 
         public static Color[,] DrawCross(int angleDegrees)
@@ -48,30 +59,21 @@ namespace RoadBarrage.External
                 }
             }
 
-            //Color[,] colorGrid = new Color[Constants.ChunkRes.BlockSize, Constants.ChunkRes.BlockSize];
-            //for (int x = 0; x < colorGrid.GetLength(0); x++)
-            //{
-            //    for (int y = 0; y < colorGrid.GetLength(1); y++)
-            //    {
-            //        int b = grid[y, x];
-            //        colorGrid[x, y] = new Color(b, b, b);
-            //    }
-            //}
-
             return grid;
         }
 
         public void Visualize()
         {
-            Color[] worldData = visuals.WorldData;
-
             for (int x = 0; x < Angles.GetLength(0); x++)
             {
                 for (int y = 0; y < Angles.GetLength(1); y++)
                 {
-                    Color[,] arrow = new Color[Constants.ChunkRes.BlockSize, Constants.ChunkRes.BlockSize];
+                    Color[,] arrow = DrawCross((int)Angles[x, y]);
+                    visuals.UpdateWorldData(x, y, arrow, true);
                 }
             }
+
+            visuals.SyncTexture();
         }
     }
 }

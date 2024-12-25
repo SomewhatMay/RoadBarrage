@@ -13,6 +13,8 @@ namespace RoadBarrage
         private SpriteBatch _spriteBatch;
 
         private readonly Random random = new Random();
+
+        private FlowField flowField;
         private Visuals visuals;
 
         public Game1()
@@ -37,6 +39,7 @@ namespace RoadBarrage
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             visuals = new Visuals(_spriteBatch, GraphicsDevice);
+            flowField = new FlowField(visuals);
 
             /**
             visuals.UpdateWorldData(0, 0, Color.Green);
@@ -60,6 +63,8 @@ namespace RoadBarrage
 
             //visuals.UpdateWorldData(1, 2, FlowField.DrawCross(0));
             //visuals.UpdateWorldData(2, 2, FlowField.DrawCross(90));
+
+            flowField.Visualize();
         }
 
         protected override void Update(GameTime gameTime)
@@ -81,7 +86,7 @@ namespace RoadBarrage
             //Color c = Color.Green;
             //visuals.UpdateWorldData(x, y, c);
 
-            visuals.UpdateWorldData(1, 2, FlowField.DrawCross((int)(gameTime.TotalGameTime.TotalSeconds * 100)));
+            //visuals.UpdateWorldData(1, 2, FlowField.DrawCross((int)(gameTime.TotalGameTime.TotalSeconds * 100)));
             visuals.Draw();
 
             _spriteBatch.End();
