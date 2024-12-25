@@ -53,12 +53,10 @@ namespace RoadBarrage
             GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();
 
-            //int x = random.Next(Constants.ChunkResolution.ResolutionX);
-            //int y = random.Next(Constants.ChunkResolution.ResolutionY);
-            //int cx = x / Constants.ChunkResolution.Size;
-            //int cy = y / Constants.ChunkResolution.Size;
-            //Color c = (cx % 2 == 0 & cy % 2 == 0) ? Color.Green : Color.Red;
-            //visuals.UpdateWorldData(x, y, c);
+            int x = random.Next(Constants.ChunkResolution.ResolutionX);
+            int y = random.Next(Constants.ChunkResolution.ResolutionY);
+            Color c = Color.Green;
+            visuals.UpdateWorldData(x, y, c);
             visuals.Draw();
 
             _spriteBatch.End();
