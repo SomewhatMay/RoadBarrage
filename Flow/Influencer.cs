@@ -1,4 +1,4 @@
-﻿namespace RoadBarrage.FlowField
+﻿namespace RoadBarrage.Flow
 {
     internal abstract class Influencer
     {

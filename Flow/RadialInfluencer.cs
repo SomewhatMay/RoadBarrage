@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RoadBarrage.FlowField
+namespace RoadBarrage.Flow
 {
     internal class RadialInfluencer : Influencer
     {

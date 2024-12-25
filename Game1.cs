@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using RoadBarrage.External;
+using RoadBarrage.Flow;
+using RoadBarrage.Graphical;
 using System;
-using System.Diagnostics;
 
 namespace RoadBarrage
 {
@@ -37,6 +37,7 @@ namespace RoadBarrage
 
             visuals = new Visuals(_spriteBatch, GraphicsDevice);
             flowField = new FlowField(visuals);
+            flowField.Visualize();
         }
 
         protected override void Update(GameTime gameTime)

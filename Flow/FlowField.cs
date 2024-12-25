@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace RoadBarrage.FlowField
+namespace RoadBarrage.Flow
 {
     internal class FlowField
     {
