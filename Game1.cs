@@ -73,38 +73,41 @@ namespace RoadBarrage
         }
 
         double previousTick = 0;
-        bool keyDown = false;
+        bool spaceDown = false;
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (!keyDown && Keyboard.GetState().IsKeyDown(Keys.Space))
-            {
-                keyDown = true;
-                visuals.SetWorldData(visuals.foreachPixel((x, y, _) =>
-                {
-                    return Color.DarkGreen;
-                }), true);
-                drawablesContainer.Clear();
-                NoiseContainer.SetSeed((int)(3940 + previousTick));
+            spaceDown = Keyboard.GetState().IsKeyDown(Keys.Space);
 
-                for (int cx = 0; cx < 40; cx++)
-                {
-                    for (int cy = 0; cy < 40; cy++)
-                    {
-                        Chunk chunk = new Chunk(this, cx, cy);
-                        chunk.Visualize(true);
-                        chunk.VisualizeRoads();
-                    }
-                }
-                visuals.SyncTexture();
-                previousTick = gameTime.TotalGameTime.TotalMilliseconds;
-            }
-            else if (!Keyboard.GetState().IsKeyDown(Keys.Space))
-            {
-                keyDown = false;
-            }
+            //if (!keyDown && Keyboard.GetState().IsKeyDown(Keys.Space))
+            //if (gameTime.TotalGameTime.TotalMilliseconds - previousTick > 10)
+            //{
+            //    keyDown = true;
+            //    visuals.SetWorldData(visuals.foreachPixel((x, y, _) =>
+            //    {
+            //        return Color.DarkGreen;
+            //    }), true);
+            //    drawablesContainer.Clear();
+            //    //NoiseContainer.SetSeed((int)(3940 + previousTick));
+
+            //    for (int cx = 0; cx < 40; cx++)
+            //    {
+            //        for (int cy = 0; cy < 40; cy++)
+            //        {
+            //            Chunk chunk = new Chunk(this, cx, cy, gameTime.TotalGameTime.TotalMilliseconds / 10);
+            //            chunk.Visualize(true);
+            //            chunk.VisualizeRoads();
+            //        }
+            //    }
+            //    visuals.SyncTexture();
+            //    previousTick = gameTime.TotalGameTime.TotalMilliseconds;
+            //}
+            //else if (!Keyboard.GetState().IsKeyDown(Keys.Space))
+            //{
+            //    keyDown = false;
+            //}
 
             drawablesContainer.Update(gameTime);
             base.Update(gameTime);
@@ -113,6 +116,28 @@ namespace RoadBarrage
         protected override void Draw(GameTime gameTime)
         {
             //Debug.WriteLine(1 / gameTime.ElapsedGameTime.TotalSeconds);
+
+            if (spaceDown && gameTime.TotalGameTime.TotalMilliseconds - previousTick > 1)
+            {
+                visuals.SetWorldData(visuals.foreachPixel((x, y, _) =>
+                {
+                    return Color.DarkGreen;
+                }), true);
+                drawablesContainer.Clear();
+                //NoiseContainer.SetSeed((int)(3940 + previousTick));
+
+                for (int cx = 0; cx < 20; cx++)
+                {
+                    for (int cy = 0; cy < 20; cy++)
+                    {
+                        Chunk chunk = new Chunk(this, cx, cy, gameTime.TotalGameTime.TotalMilliseconds / 100);
+                        chunk.Visualize(true);
+                        chunk.VisualizeRoads();
+                    }
+                }
+                visuals.SyncTexture();
+                previousTick = gameTime.TotalGameTime.TotalMilliseconds;
+            }
 
             GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();

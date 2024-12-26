@@ -17,17 +17,20 @@ namespace RoadBarrage.Algorithms
         public int ChunkX { get; private set; }
         public int ChunkY { get; private set; }
 
+        private double tDimension = 0;
+
         private static float sameSideWeight = 0.5f;
         private static Dictionary<int, float> directions = new Dictionary<int, float> { { 0, sameSideWeight }, { 1, 1 }, { 2, 1 }, { 3, 1 } };
 
         private static FastNoiseLite sideChoiceNoise = NoiseContainer.CreateNoise(1f);
 
-        public Chunk(Game1 game, int chunkX, int chunkY)
+        public Chunk(Game1 game, int chunkX, int chunkY, double tDimension)
         {
             this.game = game;
 
             // TODO FIXME This is dangerous! Visuals might not exist at this point!
             visuals = game.visuals;
+            this.tDimension = tDimension;
 
             ChunkX = chunkX;
             ChunkY = chunkY;
@@ -41,10 +44,10 @@ namespace RoadBarrage.Algorithms
 
             List<WorldPos> options = new List<WorldPos>();
             WorldPos[][] positions = new WorldPos[][] {
-                ChunkNoise.LinearToWorldPos(0, ChunkNoise.RightRoadPositions(ChunkX, ChunkY), ChunkX, ChunkY),
-                ChunkNoise.LinearToWorldPos(2, ChunkNoise.LeftRoadPositions(ChunkX, ChunkY), ChunkX, ChunkY),
-                ChunkNoise.LinearToWorldPos(1, ChunkNoise.DownRoadPositions(ChunkX, ChunkY), ChunkX, ChunkY),
-                ChunkNoise.LinearToWorldPos(3, ChunkNoise.UpRoadPositions(ChunkX, ChunkY), ChunkX, ChunkY),
+                ChunkNoise.LinearToWorldPos(0, ChunkNoise.RightRoadPositions((int) (ChunkX + tDimension), (int) (ChunkY + tDimension)), ChunkX, ChunkY),
+                ChunkNoise.LinearToWorldPos(2, ChunkNoise.LeftRoadPositions((int) (ChunkX + tDimension), (int) (ChunkY + tDimension)), ChunkX, ChunkY),
+                ChunkNoise.LinearToWorldPos(1, ChunkNoise.DownRoadPositions((int) (ChunkX + tDimension), (int) (ChunkY + tDimension)), ChunkX, ChunkY),
+                ChunkNoise.LinearToWorldPos(3, ChunkNoise.UpRoadPositions((int) (ChunkX + tDimension), (int) (ChunkY + tDimension)), ChunkX, ChunkY),
             };
             foreach (var i in positions)
             {
@@ -58,14 +61,14 @@ namespace RoadBarrage.Algorithms
             while (options.Count > 1)
             {
                 pairIndex++;
-                int startIndex = (int)Math.Clamp(Math.Round(Math.Abs(sideChoiceNoise.GetNoise(ChunkX, ChunkY, pairIndex * 2)) * options.Count), 0, options.Count - 1);
+                int startIndex = (int)Math.Clamp(Math.Round(Math.Abs(sideChoiceNoise.GetNoise((int)(ChunkX + tDimension), (int)(ChunkY + tDimension), pairIndex * 2)) * options.Count), 0, options.Count - 1);
                 WorldPos start = options[startIndex];
                 options.Remove(start);
-                int endIndex = (int)Math.Clamp(Math.Round(Math.Abs(sideChoiceNoise.GetNoise(ChunkX, ChunkY, pairIndex * 2 + 1)) * options.Count), 0, options.Count - 1);
+                int endIndex = (int)Math.Clamp(Math.Round(Math.Abs(sideChoiceNoise.GetNoise((int)(ChunkX + tDimension), (int)(ChunkY + tDimension), pairIndex * 2 + 1)) * options.Count), 0, options.Count - 1);
                 WorldPos end = options[endIndex];
                 options.Remove(end);
 
-                game.drawablesContainer.Add(new Road(start.X, start.Y, end.X, end.Y, 3));
+                game.drawablesContainer.Add(new Road(start.X, start.Y, end.X, end.Y, 2));
             }
         }
 
@@ -85,6 +88,7 @@ namespace RoadBarrage.Algorithms
             //    visuals.WorldData[visuals.CoordinatesToIndex(chunkPixelX + chunkPixelSize, chunkPixelY + i)] = borderColor;
             //}
 
+            Color dotColor = Color.Black;
             // Draw the road positions and entrances
             int[] rightRoadPositions = ChunkNoise.RightRoadPositions(ChunkX, ChunkY);
 
@@ -92,7 +96,7 @@ namespace RoadBarrage.Algorithms
             {
                 int x = chunkPixelX + chunkPixelSize - 1;
                 int y = chunkPixelY + position * Constants.WorldRes.BlockSize;
-                //visuals.WorldData[visuals.CoordinatesToIndex(x, y)] = Color.Red;
+                visuals.WorldData[visuals.CoordinatesToIndex(x, y)] = dotColor;
             }
 
             int[] leftRoadPositions = ChunkNoise.LeftRoadPositions(ChunkX, ChunkY);
@@ -101,7 +105,7 @@ namespace RoadBarrage.Algorithms
             {
                 int x = chunkPixelX + 1;
                 int y = chunkPixelY + position * Constants.WorldRes.BlockSize;
-                //visuals.WorldData[visuals.CoordinatesToIndex(x, y)] = Color.Red;
+                visuals.WorldData[visuals.CoordinatesToIndex(x, y)] = dotColor;
             }
 
             int[] downRoadPositions = ChunkNoise.DownRoadPositions(ChunkX, ChunkY);
@@ -110,7 +114,7 @@ namespace RoadBarrage.Algorithms
             {
                 int x = chunkPixelX + position * Constants.WorldRes.BlockSize;
                 int y = chunkPixelY + chunkPixelSize - 1;
-                //visuals.WorldData[visuals.CoordinatesToIndex(x, y)] = Color.Red;
+                visuals.WorldData[visuals.CoordinatesToIndex(x, y)] = dotColor;
             }
 
             int[] upRoadPositions = ChunkNoise.UpRoadPositions(ChunkX, ChunkY);
@@ -119,7 +123,7 @@ namespace RoadBarrage.Algorithms
             {
                 int x = chunkPixelX + position * Constants.WorldRes.BlockSize;
                 int y = chunkPixelY + 1;
-                //visuals.WorldData[visuals.CoordinatesToIndex(x, y)] = Color.Red;
+                visuals.WorldData[visuals.CoordinatesToIndex(x, y)] = dotColor;
             }
 
             if (!softUpdate)

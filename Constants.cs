@@ -21,7 +21,7 @@ namespace RoadBarrage
 
         public static class ChunkInfo
         {
-            public const int ChunkSize = 2; // In Blocks; Chunks are by definition square
+            public const int ChunkSize = 4; // In Blocks; Chunks are by definition square
             public const int ChunkPixels = ChunkSize * WorldRes.BlockSize; // Nmber of pixels per chunk
 
             public const int MaxRoadsPerSide = 1;
