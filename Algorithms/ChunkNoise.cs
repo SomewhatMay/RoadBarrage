@@ -14,7 +14,6 @@ namespace RoadBarrage.Algorithms
         private static readonly int roadPositionAmp = 50;
         private static readonly FastNoiseLite roadPositionNoise = NoiseContainer.CreateNoise();
 
-
         // <return> In the range [0, Constants.ChunkInfo.MaxRoadsPerSide]
         private static int RoadCount(int chunkX, int chunkY, int direction)
         {

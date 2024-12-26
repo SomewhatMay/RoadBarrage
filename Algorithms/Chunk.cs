@@ -23,6 +23,8 @@ namespace RoadBarrage.Algorithms
             ChunkY = chunkY;
         }
 
+
+
         public void Visualize(bool softUpdate = false)
         {
             int chunkPixelSize = Constants.WorldRes.BlockSize * Constants.ChunkInfo.ChunkSize;
@@ -55,6 +57,24 @@ namespace RoadBarrage.Algorithms
             {
                 int x = chunkPixelX + 1;
                 int y = chunkPixelY + position * Constants.WorldRes.BlockSize;
+                visuals.WorldData[visuals.CoordinatesToIndex(x, y)] = Color.Red;
+            }
+
+            int[] downRoadPositions = ChunkNoise.DownRoadPositions(ChunkX, ChunkY);
+
+            foreach (int position in downRoadPositions)
+            {
+                int x = chunkPixelX + position * Constants.WorldRes.BlockSize;
+                int y = chunkPixelY + chunkPixelSize - 1;
+                visuals.WorldData[visuals.CoordinatesToIndex(x, y)] = Color.Red;
+            }
+
+            int[] upRoadPositions = ChunkNoise.UpRoadPositions(ChunkX, ChunkY);
+
+            foreach (int position in upRoadPositions)
+            {
+                int x = chunkPixelX + position * Constants.WorldRes.BlockSize;
+                int y = chunkPixelY + 1;
                 visuals.WorldData[visuals.CoordinatesToIndex(x, y)] = Color.Red;
             }
 
