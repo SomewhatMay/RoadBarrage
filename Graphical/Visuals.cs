@@ -30,7 +30,7 @@ namespace RoadBarrage.Graphical
 
         public int CoordinatesToIndex(int x, int y)
         {
-            return x + y * Constants.WindowDimensions.Width;
+            return Math.Clamp(x, 0, Constants.WindowDimensions.Width) + Math.Clamp(y, 0, Constants.WindowDimensions.Height) * Constants.WindowDimensions.Width;
         }
 
         public Color[,] SquareColor(Color color)

@@ -12,16 +12,16 @@ namespace RoadBarrage
 {
     public class Game1 : Game
     {
-        private readonly GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
+        public readonly GraphicsDeviceManager _graphics;
+        public SpriteBatch _spriteBatch;
 
         private readonly Random random = new Random();
         private readonly FastNoiseLite noise = new FastNoiseLite();
 
-        private FlowField flowField;
-        private Visuals visuals;
-        private DrawablesContainer drawablesContainer;
-        private RoadContainer roadFollow;
+        internal FlowField flowField;
+        internal Visuals visuals;
+        internal DrawablesContainer drawablesContainer;
+        internal RoadContainer roadFollow;
 
         public Game1()
         {
@@ -34,7 +34,8 @@ namespace RoadBarrage
 
         protected override void Initialize()
         {
-            NoiseContainer.SetSeed(System.DateTime.Now.Millisecond);
+            //NoiseContainer.SetSeed((int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % 10000));
+            NoiseContainer.SetSeed(3920);
 
             base.Initialize();
         }
@@ -49,6 +50,16 @@ namespace RoadBarrage
             roadFollow = new RoadContainer(drawablesContainer);
 
             roadFollow.Visualize();
+
+            for (int cx = 0; cx < 3; cx++)
+            {
+                for (int cy = 0; cy < 3; cy++)
+                {
+                    Chunk chunk = new Chunk(this, cx, cy);
+                    chunk.Visualize(true);
+                }
+            }
+            visuals.SyncTexture();
 
             //flowField.AddInfluencer(new GridInfluencer(10, 10, 10, Math.PI / 4));
             //flowField.AddInfluencer(new RadialInfluencer(15, 15, 10));

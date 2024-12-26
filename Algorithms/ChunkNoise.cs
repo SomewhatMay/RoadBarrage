@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,14 +11,16 @@ namespace RoadBarrage.Algorithms
     {
         private static readonly FastNoiseLite roadCountNoise = NoiseContainer.CreateNoise();
 
-        private static readonly int roadPositionAmp = 3;
+        private static readonly int roadPositionAmp = 50;
         private static readonly FastNoiseLite roadPositionNoise = NoiseContainer.CreateNoise();
 
 
         // <return> In the range [0, Constants.ChunkInfo.MaxRoadsPerSide]
         private static int RoadCount(int chunkX, int chunkY, int direction)
         {
-            return (int)Math.Abs(roadCountNoise.GetNoise(chunkX, chunkY, direction) * (Constants.ChunkInfo.MaxRoadsPerSide + 1));
+            float n = roadCountNoise.GetNoise(chunkX + 24.12f, chunkY + 24.12f, direction + 24.12f);
+            Debug.WriteLine(n);
+            return (int)Math.Abs(n * (Constants.ChunkInfo.MaxRoadsPerSide + 1));
         }
 
         private static (int, int, int) RightBorder(int chunkX, int chunkY)
@@ -64,6 +67,7 @@ namespace RoadBarrage.Algorithms
             return RoadCount(x, y, direction);
         }
 
+        // <return> Position of road in blocks
         public static int[] RoadPositions(int chunkX, int chunkY, int direction)
         {
             int roadCount = RoadCount(chunkX, chunkY, direction);
@@ -72,7 +76,9 @@ namespace RoadBarrage.Algorithms
 
             for (int i = 0; i < roadCount; i++)
             {
-                roadPositions[i] = (int)(defaultPosition * (i + 1) + roadPositionNoise.GetNoise(chunkX, chunkY, direction) * roadPositionAmp);
+                int pos = (int)(defaultPosition * (i + 1) + roadPositionNoise.GetNoise(chunkX, chunkY, direction) * roadPositionAmp);
+                pos = pos % Constants.ChunkInfo.ChunkSize;
+                roadPositions[i] = pos;
             }
 
             return roadPositions;
