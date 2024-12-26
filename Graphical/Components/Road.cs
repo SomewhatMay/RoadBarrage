@@ -34,7 +34,7 @@ namespace RoadBarrage.Graphical.Components
             base.Initialize(visuals, graphicsDevice, spritebatch);
 
             texture = new Texture2D(graphicsDevice, 1, 1);
-            texture.SetData(new Color[] { Color.Gray });
+            texture.SetData(new Color[] { Color.Black });
             edge = endPoint - startPoint;
             angle = (float)Math.Atan2(edge.Y, edge.X);
             rect = new Rectangle((int)startPoint.X, (int)startPoint.Y, (int)edge.Length(), Thickness);

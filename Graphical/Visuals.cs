@@ -30,7 +30,7 @@ namespace RoadBarrage.Graphical
 
         public int CoordinatesToIndex(int x, int y)
         {
-            return Math.Clamp(x, 0, Constants.WindowDimensions.Width) + Math.Clamp(y, 0, Constants.WindowDimensions.Height) * Constants.WindowDimensions.Width;
+            return Math.Clamp(x, 0, Constants.WindowDimensions.Width - 1) + Math.Clamp(y, 0, Constants.WindowDimensions.Height - 1) * Constants.WindowDimensions.Width;
         }
 
         public Color[,] SquareColor(Color color)
@@ -130,6 +130,11 @@ namespace RoadBarrage.Graphical
             {
                 texture.SetData(WorldData);
             }
+        }
+
+        public void ClearWorldData()
+        {
+            WorldData = new Color[Constants.WindowDimensions.Width * Constants.WindowDimensions.Height];
         }
 
         public void SyncTexture()

@@ -17,6 +17,12 @@ namespace RoadBarrage.Algorithms
         public static void SetSeed(int seed)
         {
             Seed = seed;
+            noiseOffset = 1;
+
+            for (int i = 0; i < Noises.Count; i++)
+            {
+                Noises[i].SetSeed(seed + i);
+            }
         }
 
         public static FastNoiseLite CreateNoise(float frequency = 0.01f)

@@ -11,15 +11,17 @@ namespace RoadBarrage.Algorithms
     {
         private static readonly FastNoiseLite roadCountNoise = NoiseContainer.CreateNoise();
 
-        private static readonly int roadPositionAmp = 50;
+        private static readonly int roadPositionAmp = 15;
         private static readonly FastNoiseLite roadPositionNoise = NoiseContainer.CreateNoise();
+
+        private static readonly FastNoiseLite roadConnectionsNoise = NoiseContainer.CreateNoise();
 
         // <return> In the range [0, Constants.ChunkInfo.MaxRoadsPerSide]
         private static int RoadCount(int chunkX, int chunkY, int direction)
         {
             float n = roadCountNoise.GetNoise(chunkX + 24.12f, chunkY + 24.12f, direction + 24.12f);
-            Debug.WriteLine(n);
-            return (int)Math.Abs(n * (Constants.ChunkInfo.MaxRoadsPerSide + 1));
+            //return (int)Math.Abs(n * (Constants.ChunkInfo.MaxRoadsPerSide + 1));
+            return Constants.ChunkInfo.MaxRoadsPerSide;
         }
 
         private static (int, int, int) RightBorder(int chunkX, int chunkY)
@@ -70,12 +72,13 @@ namespace RoadBarrage.Algorithms
         public static int[] RoadPositions(int chunkX, int chunkY, int direction)
         {
             int roadCount = RoadCount(chunkX, chunkY, direction);
+            int roadPrefix = direction * Constants.ChunkInfo.MaxRoadsPerSide;
             double defaultPosition = Constants.ChunkInfo.ChunkSize * 1.0 / (roadCount + 1);
             int[] roadPositions = new int[roadCount];
 
             for (int i = 0; i < roadCount; i++)
             {
-                int pos = (int)(defaultPosition * (i + 1) + roadPositionNoise.GetNoise(chunkX, chunkY, direction) * roadPositionAmp);
+                int pos = (int)(defaultPosition * (i + 1) + roadPositionNoise.GetNoise(chunkX, chunkY, roadPrefix + i) * roadPositionAmp);
                 pos = pos % Constants.ChunkInfo.ChunkSize;
                 roadPositions[i] = pos;
             }
@@ -104,6 +107,75 @@ namespace RoadBarrage.Algorithms
         {
             var (x, y, direction) = UpBorder(chunkX, chunkY);
             return RoadPositions(x, y, direction);
+        }
+
+        public static WorldPos[] LinearToWorldPos(int side, int[] rawPositions, int chunkX, int chunkY)
+        {
+            int chunkPixels = Constants.ChunkInfo.ChunkPixels;
+            int blockSize = Constants.WorldRes.BlockSize;
+            WorldPos[] positions = new WorldPos[rawPositions.Length];
+
+            for (int i = 0; i < rawPositions.Length; i++)
+            {
+                int pos = rawPositions[i];
+                switch (side)
+                {
+                    case 0: // right
+                        positions[i] = new WorldPos((chunkX + 1) * chunkPixels - 1, chunkY * chunkPixels + pos * blockSize);
+                        break;
+                    case 1: // down
+                        positions[i] = new WorldPos(chunkX * chunkPixels + pos * blockSize, (chunkY + 1) * chunkPixels - 1);
+                        break;
+                    case 2: // left
+                        positions[i] = new WorldPos(chunkX * chunkPixels, chunkY * chunkPixels + pos * blockSize);
+                        break;
+                    case 3: // up
+                        positions[i] = new WorldPos(chunkX * chunkPixels + pos * blockSize, chunkY * chunkPixels);
+                        break;
+                    default:
+                        throw new Exception("Invalid side!");
+                        break;
+                }
+            }
+
+            return positions;
+        }
+
+        public static int GetRandomKey(Dictionary<int, float> weightedOptions, int x, int y, int z)
+        {
+            if (weightedOptions == null || weightedOptions.Count == 0)
+                throw new ArgumentException("Dictionary must not be null or empty.");
+
+            // Normalize weights to calculate cumulative distribution
+            float totalWeight = weightedOptions.Values.Sum();
+            var normalizedOptions = weightedOptions
+                .Select(kvp => new { kvp.Key, NormalizedWeight = kvp.Value / totalWeight })
+                .ToList();
+
+            // Build cumulative weight map
+            float cumulativeSum = 0;
+            var cumulativeDistribution = new List<(int Key, float CumulativeWeight)>();
+
+            foreach (var option in normalizedOptions)
+            {
+                cumulativeSum += option.NormalizedWeight;
+                cumulativeDistribution.Add((option.Key, cumulativeSum));
+            }
+
+            // Generate Perlin noise for selection
+            float noiseValue = roadConnectionsNoise.GetNoise(x, y, z);
+
+            // Find corresponding key
+            foreach (var entry in cumulativeDistribution)
+            {
+                if (noiseValue <= entry.CumulativeWeight)
+                {
+                    return entry.Key;
+                }
+            }
+
+            // Fallback (should not occur)
+            return cumulativeDistribution.Last().Key;
         }
     }
 }

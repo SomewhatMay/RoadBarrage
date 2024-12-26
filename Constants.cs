@@ -6,8 +6,8 @@ namespace RoadBarrage
     {
         public static class WindowDimensions
         {
-            public const int Width = 540;
-            public const int Height = 540;
+            public const int Width = 720;
+            public const int Height = 720;
         }
 
         public static class WorldRes
@@ -21,9 +21,10 @@ namespace RoadBarrage
 
         public static class ChunkInfo
         {
-            public const int ChunkSize = 16; // In Blocks; Chunks are by definition square
+            public const int ChunkSize = 2; // In Blocks; Chunks are by definition square
+            public const int ChunkPixels = ChunkSize * WorldRes.BlockSize; // Nmber of pixels per chunk
 
-            public const int MaxRoadsPerSide = 4;
+            public const int MaxRoadsPerSide = 1;
         }
     }
 }
